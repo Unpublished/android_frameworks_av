@@ -1287,12 +1287,12 @@ void MediaPlayerService::Client::notify(
                 client->mAudioOutput->switchToNextOutput();
             ALOGD("gapless:current track played back");
             ALOGD("gapless:try to do a gapless switch to next track");
-            status_t ret;
-            ret = client->mNextClient->start();
-            if (ret == NO_ERROR) {
-                client->mNextClient->mClient->notify(MEDIA_INFO,
-                        MEDIA_INFO_STARTED_AS_NEXT, 0, obj);
-            } else {
+
+            if (client->mNextClient->start() == NO_ERROR &&
+                client->mNextClient->mClient != NULL) {
+                client->mNextClient->mClient->notify(
+                        MEDIA_INFO, MEDIA_INFO_STARTED_AS_NEXT, 0, obj);
+            } else if (client->mClient != NULL) {
                 client->mClient->notify(MEDIA_ERROR, MEDIA_ERROR_UNKNOWN , 0, obj);
                 ALOGW("gapless:start playback for next track failed");
             }
